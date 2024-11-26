@@ -23,7 +23,7 @@ public class game {
         int[][] arr = (int[][]) randomResult[0];
         int total = (int) randomResult[1];
         Scanner game = new Scanner(System.in);
-
+        System.out.println("IN THIS YOU HAVE "+total+" SHIPS");
         int hit = 0, row, col;
         while (chances > 0) {
             System.out.println("ENTER THE SPECIFIC ROW:");
@@ -53,7 +53,7 @@ public class game {
     public static void main(String[] args) {
         System.out.println("\t\t\tBATTLEMENT OF SHIPS");
         System.out.println("YOU HAVE TO GUESS THE SHIPS PRESENT IN A 4X4 MATRIX IN 12 CHANCES");
-        System.out.println("IN THIS YOU HAVE 8 SHIPS");
+        
 
         Object[] randomResult = random(4, 4);
         battlement(randomResult, 12);
