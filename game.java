@@ -1,61 +1,69 @@
 import java.util.Scanner;
 import java.util.Random;
+import java.util.InputMismatchException;
 
 public class game {
-    public static Object[] random(int start, int end) {
+    public static Object[] generateGrid(int rows, int cols) {
         Random rd = new Random();
-        int[][] arr1 = new int[start][end];
-        int n = 0;
+        int[][] grid = new int[rows][cols];
+        int shipCount = 0;
 
-        for (int i = 0; i < start; i++) {
-            for (int j = 0; j < end; j++) {
-                arr1[i][j] = rd.nextInt(2);
-                if (arr1[i][j] == 0) {
-                    n++;
-                }
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                grid[i][j] = rd.nextInt(2);
+                if (grid[i][j] == 0) shipCount++;
             }
         }
-
-        return new Object[] { arr1, n };
+        return new Object[]{grid, shipCount};
     }
 
-    public static void battlement(Object[] randomResult, int chances) {
-        int[][] arr = (int[][]) randomResult[0];
-        int total = (int) randomResult[1];
-        Scanner game = new Scanner(System.in);
-        System.out.println("IN THIS YOU HAVE "+total+" SHIPS");
-        int hit = 0, row, col;
-        while (chances > 0) {
-            System.out.println("ENTER THE SPECIFIC ROW:");
-            row = game.nextInt();
-            System.out.println("ENTER THE SPECIFIC COLUMN:");
-            col = game.nextInt();
+    public static void playGame(Object[] gameData, int chances, int rows, int cols) {
+        int[][] grid = (int[][]) gameData[0];
+        int totalShips = (int) gameData[1];
+        int hits = 0;
+        Scanner scanner = new Scanner(System.in);
 
-            if ((row < 4 && row >= 0) && (col < 4 && col >= 0)) {
-                if (arr[row][col] == 0) {
-                    System.out.println("YOU HAVE ATTACKED A SHIP");
-                    arr[row][col] = 1;
-                    hit++;
-                    total--;
+        System.out.println("\nWELCOME TO BATTLESHIP!");
+        System.out.println("There are " + totalShips + " hidden ships.");
+        System.out.println("You have " + chances + " chances to attack!\n");
+
+        while (chances > 0 && totalShips > 0) {
+            try {
+                System.out.print("Enter row (0-" + (rows - 1) + "): ");
+                int row = scanner.nextInt();
+                System.out.print("Enter column (0-" + (cols - 1) + "): ");
+                int col = scanner.nextInt();
+
+                if (row >= 0 && row < rows && col >= 0 && col < cols) {
+                    if (grid[row][col] == 0) {
+                        System.out.println("🎯 HIT! Ship Destroyed!");
+                        grid[row][col] = 1; 
+                        hits++;
+                        totalShips--;
+                    } else {
+                        System.out.println("❌ MISS! No ship there.");
+                    }
+                    chances--;
+                    System.out.println("Remaining ships: " + totalShips + " | Chances left: " + chances + "\n");
                 } else {
-                    System.out.println("SORRY YOU HAVE NOT ATTACKED A SHIP");
+                    System.out.println("⚠️ Invalid Input! Choose a valid row and column.");
                 }
-                System.out.println("BALANCE REMAINING " + total);
-                System.out.println("TOTAL CHANCES LEFT " + (--chances));
-            } else {
-                System.out.println("WRONG INPUT, PLEASE ENTER AGAIN");
+            } catch (InputMismatchException e) {
+                System.out.println("🚫 Error! Please enter numeric values.");
+                scanner.next(); 
             }
         }
 
-        System.out.println("GAME OVER. YOU HIT " + hit + " SHIPS.");
+        System.out.println("\nGAME OVER! You hit " + hits + " ships.");
     }
 
     public static void main(String[] args) {
-        System.out.println("\t\t\tBATTLEMENT OF SHIPS");
-        System.out.println("YOU HAVE TO GUESS THE SHIPS PRESENT IN A 4X4 MATRIX IN 12 CHANCES");
-        
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter grid size (e.g., 4 for a 4x4 grid): ");
+        int size = scanner.nextInt();
+        int chances = size * 3; 
 
-        Object[] randomResult = random(4, 4);
-        battlement(randomResult, 12);
+        Object[] gameData = generateGrid(size, size);
+        playGame(gameData, chances, size, size);
     }
 }
